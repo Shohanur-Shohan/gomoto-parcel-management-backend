@@ -59,7 +59,6 @@ async function run() {
     //booking by user
     app.post('/parcel_booking', async (req, res)=>{
       const bookingInfo = req?.body;
-      console.log(bookingInfo)
       const result = await bookedCollection.insertOne(bookingInfo);
       res.send(result);
     })
