@@ -63,6 +63,19 @@ async function run() {
       res.send(result);
     })
 
+    //user booked parcel data
+    app.get('/user_booked_parcels/:email', async(req, res)=>{
+        const userEmail = req?.params?.email;
+        const query = {
+          booked_user_email: userEmail,
+        }
+
+        const result = await bookedCollection.find(query).toArray();
+        // console.log(result)
+        res.send(result);
+    })
+
+
 
   } catch (error) {
     console.log(error)
