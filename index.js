@@ -24,11 +24,33 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    //collections 
+    const usersCollection = client.db("gomoto").collection("users");
+    const bookedCollection = client.db("gomoto").collection("booked_info");
+
+    
+
+    //send user to db
+    app.post('/users', async(req, res)=>{
+      const {user} = req.body;
+
+      //checking user email exists or not in DB
+      const query = {
+        userEmail: user?.userEmail
+      }
+      const userExists = await usersCollection.findOne(query);
+      if(userExists){
+        res.send({ message: "Email already exists!", insertedId: null })
+      }
+      else{
+        const result = await usersCollection.insertOne(user)
+        res.send(result);
+      }
+    })
+
+    
+
+
   } catch (error) {
     console.log(error)
   }
