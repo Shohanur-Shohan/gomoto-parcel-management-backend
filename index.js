@@ -28,7 +28,15 @@ async function run() {
     const usersCollection = client.db("gomoto").collection("users");
     const bookedCollection = client.db("gomoto").collection("booked_info");
 
-    
+    //userType find
+    app.get('/user/:email', async(req, res)=>{
+      const userEmail = req?.params?.email;
+      const query = {
+        userEmail: userEmail,
+      }
+      const result = await usersCollection.findOne(query);
+      res.send(result);
+    })
 
     //send user to db
     app.post('/users', async(req, res)=>{
