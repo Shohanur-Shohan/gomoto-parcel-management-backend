@@ -11,6 +11,7 @@ app.use(cors())
 
 
 const { MongoClient, ServerApiVersion } = require('mongodb');
+const { ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.USER_NAME}:${process.env.USER_PASS}@cluster0.wis5xxo.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -74,6 +75,37 @@ async function run() {
         // console.log(result)
         res.send(result);
     })
+
+    //find single booked data by id
+    app.get('/update-booked-parcel/:id', async(req, res)=>{
+      const ID = req?.params?.id;
+      const query = {
+        _id: new ObjectId(ID)
+      }
+
+      const result = await bookedCollection.findOne(query);
+      res.send(result);
+  })
+
+
+    //update user booked parcel data
+    // app.post('/update_booked_parcel/:id', async (req, res)=>{
+    //   const bookedItemId = req?.params?.id;
+
+    //   const bookingInfo = req?.body;
+    //   const filter = {
+    //     booked_user_email: userEmail,
+    //   }
+    //   const options = { upsert: true };
+
+    //   const updateDoc = {
+    //     $set: {
+
+    //     }
+    //   }
+    //   const result = await bookedCollection.updateOne(filter, updateDoc, options);
+    //   res.send(result);
+    // })
 
 
 
