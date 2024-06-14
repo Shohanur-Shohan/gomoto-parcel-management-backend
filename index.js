@@ -89,8 +89,8 @@ async function run() {
 
 
     // update user booked parcel data
-    app.patch('/update_booked_parcel/:id', async (req, res)=>{
-      const {id} = req?.params;
+    app.patch('/update_booked_parcel/:email/:id', async (req, res)=>{
+      const {email, id} = req?.params;
       const updatedInfo = req?.body;
 
       const filter = {
@@ -105,7 +105,15 @@ async function run() {
     res.send(result);
     })
 
-   
+    //delete user booked parcel data
+    app.delete('/delete_booked_parcel/:email/:id', async (req, res)=>{
+      const {email, id} = req?.params;
+      const query = {
+        _id: new ObjectId(id)
+      }
+      const result = await bookedCollection.deleteOne(query);
+      res.send(result);
+    })
 
 
 
