@@ -89,8 +89,8 @@ async function run() {
 
 
     // update user booked parcel data
-    app.patch('/update_booked_parcel/:email/:id', async (req, res)=>{
-      const {email, id} = req?.params;
+    app.patch('/update_booked_parcel/:id', async (req, res)=>{
+      const {id} = req?.params;
       const updatedInfo = req?.body;
 
       const filter = {
@@ -104,6 +104,8 @@ async function run() {
       const result = await bookedCollection.updateOne(filter, updateDoc, options);
     res.send(result);
     })
+
+   
 
 
 
