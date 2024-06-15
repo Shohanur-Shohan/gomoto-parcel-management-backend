@@ -133,6 +133,15 @@ async function run() {
       res.send(result);
     })
 
+    //all deliveryMen
+    app.get('/allDeliveryMen', async (req, res)=>{
+
+      const query = {
+        user_type: "delivery_men"
+      }
+      const result = await usersCollection.find(query).toArray();
+      res.send(result);
+    })
 
 
   } catch (error) {
