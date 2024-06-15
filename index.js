@@ -65,15 +65,26 @@ async function run() {
     })
 
     //user booked parcel data
-    app.get('/user_booked_parcels/:email', async(req, res)=>{
+    app.get('/user_booked_parcels/:email/:filterStatus', async(req, res)=>{
         const userEmail = req?.params?.email;
-        const query = {
-          booked_user_email: userEmail,
-        }
+        const Status = req?.params?.filterStatus;
 
-        const result = await bookedCollection.find(query).toArray();
-        // console.log(result)
-        res.send(result);
+        if(Status === "all"){
+          const query = {
+            booked_user_email: userEmail,
+          }
+          const result = await bookedCollection.find(query).toArray();
+          res.send(result);
+
+        }
+        else{
+          const query = {
+            booked_user_email: userEmail,
+            status: Status
+          }
+          const result = await bookedCollection.find(query).toArray();
+          res.send(result);
+        }
     })
 
     //find single booked data by id
@@ -105,13 +116,20 @@ async function run() {
     res.send(result);
     })
 
-    //delete user booked parcel data
-    app.delete('/delete_booked_parcel/:email/:id', async (req, res)=>{
+    //cancel user booked parcel data
+    app.patch('/cancel_booked_parcel/:email/:id', async (req, res)=>{
       const {email, id} = req?.params;
-      const query = {
+      const filter = {
         _id: new ObjectId(id)
       }
-      const result = await bookedCollection.deleteOne(query);
+      const options = { upsert: true };
+
+      const updateDoc = {
+        $set: {
+          status: "cancelled"
+        },
+      }
+      const result = await bookedCollection.updateOne(filter, updateDoc, options);
       res.send(result);
     })
 
