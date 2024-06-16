@@ -143,6 +143,29 @@ async function run() {
       res.send(result);
     })
 
+    //all parcels
+    app.get('/allParcels', async (req, res)=>{
+      const result = await bookedCollection.find().toArray();
+      res.send(result);
+    })
+
+    // update user booked parcel data by admin
+    app.patch('/update_booked_parcel_byadmin/:email/:id', async (req, res)=>{
+      const {email, id} = req?.params;
+      const updatedData = req?.body;
+
+      const filter = {
+        _id: new ObjectId(id),
+      }
+      const options = { upsert: true };
+
+      const updateDoc = {
+        $set: updatedData,
+      }
+      const result = await bookedCollection.updateOne(filter, updateDoc, options);
+    res.send(result);
+    })
+
 
   } catch (error) {
     console.log(error)
