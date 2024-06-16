@@ -30,16 +30,17 @@ async function run() {
     //collections 
     const usersCollection = client.db("gomoto").collection("users");
     const bookedCollection = client.db("gomoto").collection("booked_info");
+    const deliveryMenCollection = client.db("gomoto").collection("all_delivery_men");
 
     //convert date strings to Date objects
-    const parseDate = (dateStr) => {
-      return parse(dateStr, "MMMM do, yyyy", new Date());
-    };
+    // const parseDate = (dateStr) => {
+    //   return parse(dateStr, "MMMM do, yyyy", new Date());
+    // };
 
     // preprocess date strings
-    const preprocessDate = (dateStr) => {
-      return dateStr.replace(/(\d+)(th|rd|nd|st)/, '$1');
-    };
+    // const preprocessDate = (dateStr) => {
+    //   return dateStr.replace(/(\d+)(th|rd|nd|st)/, '$1');
+    // };
 
     //userType find
     app.get('/user/:email', async(req, res)=>{
@@ -56,6 +57,7 @@ async function run() {
       const {user} = req.body;
 
       //checking user email exists or not in DB
+      console.log(user?.user_type)
       const query = {
         userEmail: user?.userEmail
       }
@@ -64,7 +66,10 @@ async function run() {
         res.send({ message: "Email already exists!", insertedId: null })
       }
       else{
-        const result = await usersCollection.insertOne(user)
+        const result = await usersCollection.insertOne(user);
+        if(user?.user_type === "delivery_men"){
+          await deliveryMenCollection.insertOne({...user, parcel_delivered: [], reviews: []})
+        }
         res.send(result);
       }
     })
@@ -148,10 +153,10 @@ async function run() {
     //all deliveryMen
     app.get('/allDeliveryMen', async (req, res)=>{
 
-      const query = {
-        user_type: "delivery_men"
-      }
-      const result = await usersCollection.find(query).toArray();
+      // const query = {
+      //   user_type: "delivery_men"
+      // }
+      const result = await deliveryMenCollection.find().toArray();
       res.send(result);
     })
 
