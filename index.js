@@ -4,11 +4,13 @@ const cors = require('cors');
 require('dotenv').config();
 const port = process.env.PORT || 5000;
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-
+const { parse } = require('date-fns');
+const bodyParser = require('body-parser');
 //config
 //middleware
 app.use(express.json())
 app.use(cors())
+app.use(bodyParser.json())
 
 
 
@@ -28,6 +30,16 @@ async function run() {
     //collections 
     const usersCollection = client.db("gomoto").collection("users");
     const bookedCollection = client.db("gomoto").collection("booked_info");
+
+    //convert date strings to Date objects
+    const parseDate = (dateStr) => {
+      return parse(dateStr, "MMMM do, yyyy", new Date());
+    };
+
+    // preprocess date strings
+    const preprocessDate = (dateStr) => {
+      return dateStr.replace(/(\d+)(th|rd|nd|st)/, '$1');
+    };
 
     //userType find
     app.get('/user/:email', async(req, res)=>{
@@ -164,6 +176,14 @@ async function run() {
       }
       const result = await bookedCollection.updateOne(filter, updateDoc, options);
     res.send(result);
+    })
+
+    //search by date
+    app.post('/searchByDate', async (req, res)=>{
+      const { dateFrom, dateTo } = req?.body;
+
+     
+      res.send([]);
     })
 
 
