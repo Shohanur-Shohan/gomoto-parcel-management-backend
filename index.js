@@ -186,10 +186,14 @@ async function run() {
       res.send([]);
     })
 
-    //all users
+    //all users list
     app.get('/allUsersList', async (req, res)=>{
 
-      const result = await usersCollection.find().toArray();
+      const query = {
+        user_type: "user"
+      }
+      
+      const result = await usersCollection.find(query).toArray();
       res.send(result);
     })
 
