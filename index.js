@@ -4,13 +4,11 @@ const cors = require('cors');
 require('dotenv').config();
 const port = process.env.PORT || 5000;
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-const { parse } = require('date-fns');
-const bodyParser = require('body-parser');
+
 //config
 //middleware
-app.use(express.json())
 app.use(cors())
-app.use(bodyParser.json())
+app.use(express.json())
 
 
 
@@ -186,6 +184,13 @@ async function run() {
 
      
       res.send([]);
+    })
+
+    //all users
+    app.get('/allUsersList', async (req, res)=>{
+
+      const result = await usersCollection.find().toArray();
+      res.send(result);
     })
 
 
