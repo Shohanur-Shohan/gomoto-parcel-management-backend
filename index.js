@@ -57,7 +57,7 @@ async function run() {
       const {user} = req.body;
 
       //checking user email exists or not in DB
-      console.log(user?.user_type)
+      // console.log(user?.user_type)
       const query = {
         userEmail: user?.userEmail
       }
@@ -68,7 +68,7 @@ async function run() {
       else{
         const result = await usersCollection.insertOne(user);
         if(user?.user_type === "delivery_men"){
-          await deliveryMenCollection.insertOne({...user, parcel_delivered: [], reviews: []})
+          await deliveryMenCollection.insertOne({...user, parcel_delivered: [], reviews: [], user_phone: user?.user_phone})
         }
         res.send(result);
       }
@@ -153,9 +153,6 @@ async function run() {
     //all deliveryMen
     app.get('/allDeliveryMen', async (req, res)=>{
 
-      // const query = {
-      //   user_type: "delivery_men"
-      // }
       const result = await deliveryMenCollection.find().toArray();
       res.send(result);
     })
