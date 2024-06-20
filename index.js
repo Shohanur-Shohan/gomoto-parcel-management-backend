@@ -187,15 +187,22 @@ async function run() {
     })
 
     //all users list
-    app.get('/allUsersList', async (req, res)=>{
-
-      const query = {
-        user_type: "user"
-      }
-      
-      const result = await usersCollection.find(query).toArray();
-      res.send(result);
-    })
+    app.get('/allUsersList', async (req, res) => {
+      const currentPage = parseInt(req.query.currentPage) || 0;
+      const itemsPerPage = 5;
+    
+      const query = { user_type: "user" };
+    
+      // Get the total number of users
+      const totalItems = await usersCollection.countDocuments(query);
+      const users = await usersCollection.find(query)
+        .skip(currentPage * itemsPerPage)
+        .limit(itemsPerPage)
+        .toArray();
+    
+      res.send({ totalItems, users });
+    });
+    
 
     //change user type
     app.patch('/changeUserType/:id', async (req, res)=>{
