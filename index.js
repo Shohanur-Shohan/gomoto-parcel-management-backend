@@ -197,6 +197,34 @@ async function run() {
       res.send(result);
     })
 
+    //change user type
+    app.patch('/changeUserType/:id', async (req, res)=>{
+      const {changetype, updatedInfo} = req?.body;
+      const id = req.params?.id
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+
+      const updateDoc = {
+        $set: {
+          user_type: changetype
+        },
+      };
+      const query = { booked_user_email: updatedInfo?.userEmail };
+
+      if(changetype === "delivery_men"){
+        const result = await usersCollection.updateOne(filter, updateDoc, options);
+        await deliveryMenCollection.insertOne(updatedInfo);
+        await bookedCollection.deleteMany(query);
+        
+        res.send(result);
+      }
+      else{
+        const result = await usersCollection.updateOne(filter, updateDoc, options);
+        await bookedCollection.deleteMany(query);
+        res.send(result);
+      }
+    })
+
 
   } catch (error) {
     console.log(error)
