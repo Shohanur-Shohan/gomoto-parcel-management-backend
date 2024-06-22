@@ -286,13 +286,46 @@ async function run() {
       res.send(result);
     })
 
+    //give review to deliverymen
+    app.patch('/review_to_delivery_men/:id', async (req, res)=>{
+      const delivery_men_id = req?.params?.id;
+      const data = req?.body;
+
+      const reviewerEmail = data?.reviewer;
+
+      const filter = {
+        _id: new ObjectId(delivery_men_id)
+      }
+      const options = { upsert: true };
+
+      const updateDoc = {
+        $push: {
+          reviews: data
+        } 
+      }
+
+      const deliveryMen = await deliveryMenCollection.findOne(filter);
+      if(deliveryMen){
+        const reviewerExists = deliveryMen.reviews.some(review => review.reviewer === reviewerEmail);
+        if(reviewerExists){
+          res.send({ message: "Already submitted a review." });
+        }
+        else{
+          const result = await deliveryMenCollection.updateOne(filter, updateDoc, options);
+          res.send(result);
+        }
+      }
+
+      
+    })
+
 
   } catch (error) {
-    console.log(error)
+    // console.log(error)
   }
 }
 run();
 
 app.listen(port, ()=>{
-  console.log(`Example app listening on port ${port}`)
+  // console.log(`Example app listening on port ${port}`)
 })
