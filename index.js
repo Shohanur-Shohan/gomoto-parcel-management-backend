@@ -371,6 +371,42 @@ async function run() {
       res.send(result);
     })
 
+    //home statistics data
+    app.get('/allusers', async(req, res)=>{
+      const aggregation = [
+        {
+          $project: {
+            parcelCount: { $size: "$parcel_delivered" }
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            totalParcelsDelivered: { $sum: "$parcelCount" }
+          }
+        }
+      ];
+
+      //all delivered parcels
+      const result = await deliveryMenCollection.aggregate(aggregation).toArray();
+      const query  = {
+        user_type: "user"
+      }
+
+      //all users
+      const totalItems = await usersCollection.countDocuments(query);
+
+      //all booked parcel
+      const parcelBooked = await bookedCollection.countDocuments();
+      const data = {
+        parcelBooked: parcelBooked,
+        parcelDelivered: result[0]?.totalParcelsDelivered,
+        totalUsers: totalItems,
+
+      }
+      res.send(data);
+    })
+
     //payment
 
 
