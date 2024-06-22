@@ -315,8 +315,17 @@ async function run() {
           res.send(result);
         }
       }
+    })
 
-      
+    //deliveymen reviews
+    app.get('/deliveyMenReviews/:email', async (req, res)=>{
+      const deliveryMenEmail = req?.params?.email;
+
+      const query = { 
+        userEmail: deliveryMenEmail
+      }
+      const result = await deliveryMenCollection.findOne(query);
+      res.send(result);
     })
 
 
