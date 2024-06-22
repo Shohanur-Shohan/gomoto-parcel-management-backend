@@ -398,12 +398,26 @@ async function run() {
 
       //all booked parcel
       const parcelBooked = await bookedCollection.countDocuments();
+
+      const aggregation2 = [
+        {
+          $group: {
+            _id: null,
+            totalRevinue: { $sum: "$parcel_price" }
+          }
+        }
+      ];
+
+      const result2 = await bookedCollection.aggregate(aggregation2).toArray();
+
       const data = {
+        totalRevinue: result2[0]?.totalRevinue,
         parcelBooked: parcelBooked,
         parcelDelivered: result[0]?.totalParcelsDelivered,
         totalUsers: totalItems,
 
       }
+      // console.log(data, result2)
       res.send(data);
     })
 
