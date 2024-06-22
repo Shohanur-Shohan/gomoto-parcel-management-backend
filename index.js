@@ -7,8 +7,13 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 //config
 //middleware
-app.use(cors())
-app.use(express.json())
+app.use(
+  cors({
+    origin: ["https://gomoto-parcel-management.netlify.app", "http://localhost:5173"],
+    credentials: true,
+  })
+);
+app.use(express.json());
 
 
 
@@ -355,7 +360,7 @@ async function run() {
       ]).toArray();
       res.send(result);
     })
-    
+
 //single delivey men data
     app.get('/singleDeliveryMen/:id', async (req, res)=>{
       const delivery_men_id = req?.params?.id;
@@ -365,6 +370,8 @@ async function run() {
       const result = await deliveryMenCollection.findOne(query);
       res.send(result);
     })
+
+    //payment
 
 
   } catch (error) {
