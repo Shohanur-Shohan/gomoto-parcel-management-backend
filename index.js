@@ -328,6 +328,44 @@ async function run() {
       res.send(result);
     })
 
+    //top 4 delivery men
+    app.get('/topDeliveryMen', async (req, res)=>{
+
+      const result = await deliveryMenCollection.aggregate([
+        {
+          $unwind: "$reviews"
+        },
+        {
+          $group: {
+            _id: "$_id",
+            userName: { $first: "$userName" },
+            userEmail: { $first: "$userEmail" },
+            user_type: { $first: "$user_type" },
+            user_phone: { $first: "$user_phone" },
+            totalReviews: { $sum: 1 },
+            averageRating: { $avg: "$reviews.rating" }
+          }
+        },
+        {
+          $sort: { averageRating: -1, totalReviews: -1 }
+        },
+        {
+          $limit: 4
+        }
+      ]).toArray();
+      res.send(result);
+    })
+    
+//single delivey men data
+    app.get('/singleDeliveryMen/:id', async (req, res)=>{
+      const delivery_men_id = req?.params?.id;
+      const query = {
+        _id: new ObjectId(delivery_men_id)
+      }
+      const result = await deliveryMenCollection.findOne(query);
+      res.send(result);
+    })
+
 
   } catch (error) {
     // console.log(error)
