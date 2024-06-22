@@ -232,6 +232,60 @@ async function run() {
       }
     })
 
+    //deliveyList
+    app.get('/deliveryList/:email', async(req, res)=>{
+      const deliveryMenEmail = req?.params?.email;
+
+      const query = { 
+        userEmail: deliveryMenEmail
+      }
+      const result = await deliveryMenCollection.findOne(query);
+      const deliveryMenId = result?._id.toString();
+
+      if(deliveryMenId){
+        //query2
+        const query2 = {     
+          delivery_men_id: deliveryMenId
+        }
+        const result2 = await bookedCollection.find(query2).toArray();
+        res.send(result2);
+      }
+      else{
+        res.send([]);
+      }
+
+    })
+
+    //update booked parcel by deliverymen
+    app.patch('/updateBookedParcel/:email/:id', async (req, res)=>{
+      const {email, id} = req?.params;
+      const updatedData = req?.body;
+
+      const filter = {
+        _id: new ObjectId(id),
+      }
+      const options = { upsert: true };
+
+      const updateDoc = {
+        $set: {
+          status: updatedData?.status,
+        }
+      }
+      const result = await bookedCollection.updateOne(filter, updateDoc, options);
+      if(updatedData?.status === "delivered"){
+        const filter2 = {  
+          userEmail: email,
+        }
+        const query2 = {
+          $push: {
+            parcel_delivered: id
+          }
+        }
+        await deliveryMenCollection.updateOne(filter2, query2, options)
+      }
+      res.send(result);
+    })
+
 
   } catch (error) {
     console.log(error)
